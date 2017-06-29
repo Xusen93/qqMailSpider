@@ -8,7 +8,7 @@ __pycache__/
 *.sublime-workspace
 
 #json data
-.json
+*.json
 
 # C extensions
 *.so
