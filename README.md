@@ -19,7 +19,7 @@ pip install thulac
 To [http://thulac.thunlp.org/](http://thulac.thunlp.org/) for more. It is a word-split package.  
 - wordcloud  
 ```shell
-pip install selenium
+pip install wordcloud
 ```  
 To [http://amueller.github.io/word_cloud/](http://amueller.github.io/word_cloud/) for more. It is to generate word cloud.  
 ## Contacts  
