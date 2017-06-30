@@ -3,7 +3,7 @@
 # @Email:  xusenthu@qq.com
 # @Date:   2017-06-26 11:28:40
 # @Last Modified by:   Xusen
-# @Last Modified time: 2017-06-29 16:36:45
+# @Last Modified time: 2017-06-30 10:55:56
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 import logging
@@ -12,6 +12,10 @@ import time
 import json
 import os
 import thulac
+from collections import Counter
+from scipy.misc import imread
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 
 
 logging.basicConfig(
@@ -97,7 +101,15 @@ class QQMailSpider(object):
         logging.info("邮件信息已存至 info.json 中")
 
     def json2info(self):
-        pass
+        with open('info.json', 'r') as f:
+            jstr = f.read()
+        jslist = json.loads(jstr)
+        for mail in jslist:
+            self.mail_sender.append(mail['sender'])
+            self.mail_sender_addr.append(mail['from'])
+            self.mail_time.append(mail['time'])
+            self.mail_subject.append(mail['subject'])
+        logging.info("邮件信息读取完毕！")
 
     def __switch_to_iframe(self, iframe_name, timeout=10):
         WebDriverWait(self.browser, timeout).until(
@@ -105,10 +117,57 @@ class QQMailSpider(object):
         self.browser.switch_to.frame(iframe_name)
 
 
-def wordSplit():
-    pass
+def wordSplit(rawWordList):
+    if os.path.exists('wordsfreq.json'):
+        logging.info("载入已有分词结果...")
+        with open('wordsfreq.json','r') as f:
+            wjson=f.read()
+        return json.loads(wjson)
+    else:
+        logging.info("载入thulac分词包")
+        thusplit = thulac.thulac(filt=True)
+        words = []
+        logging.info("开始分词...")
+        splitcnt = 0
+        for raw in rawWordList:
+            words.extend(thusplit.cut(raw))  # 分词结果为二维数组，[['word','type'],...,]
+            splitcnt += 1
+            if splitcnt % 100 == 0:
+                logging.info("已进行 %d 次..." % splitcnt)
+        logging.info("分词完毕！共进行 %d 次" % splitcnt)
+        wlist = []
+        for w in words:
+            filt = ['n', 'np', 'ns', 'ni', 'nz']  # 按照词的类型过滤
+            if w[1] in filt:
+                wlist.append(w[0])
+        count = Counter(wlist)
+        wdict = dict((word, freq) for word, freq in count.most_common())  # 生成词频dict
+        with open('wordsfreq.json','w') as f:
+            f.write(json.dumps(wdict))
+        return wdict
+
+
+def wordCloudGen(txt_freq):
+    wc = WordCloud(
+        background_color='white',
+        width=1920,
+        height=1080,
+        random_state=30,
+        font_path=r'C:\Windows\Fonts\等线\Deng.ttf'  # 设置中文字体的路径
+    )
+    wc.generate_from_frequencies(txt_freq)
+    default_colors = wc.to_array()
+    plt.figure()
+    plt.imshow(default_colors, interpolation='bilinear')
+    plt.axis('off')
+    wc.to_file('subject.png')
+    logging.info("保存词云至 subject.png")
+
 
 if __name__ == '__main__':
     spider = QQMailSpider()
     if not os.path.exists('info.json'):
         spider.run()
+    else:
+        spider.json2info()
+    wordCloudGen(wordSplit(spider.mail_subject))
