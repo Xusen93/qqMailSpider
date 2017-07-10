@@ -3,7 +3,7 @@
 > This project is for crawling learning, from a python rookie.  
 ## Usage  
 ```shell
-python Research_Spider.py
+python qqMailSpider.py
 ```  
 Execute the script, wait for the browser opening, login your account.  
 ## Dependency  
