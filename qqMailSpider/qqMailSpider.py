@@ -3,7 +3,7 @@
 # @Email:  xusenthu@qq.com
 # @Date:   2017-06-26 11:28:40
 # @Last Modified by:   Xusen
-# @Last Modified time: 2017-06-30 10:55:56
+# @Last Modified time: 2017-07-12 10:30:10
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 import logging
@@ -12,6 +12,7 @@ import time
 import json
 import os
 import thulac
+from functools import reduce
 from collections import Counter
 from scipy.misc import imread
 import matplotlib.pyplot as plt
@@ -95,7 +96,7 @@ class QQMailSpider(object):
                 'time': self.mail_time[i],
                 'subject': self.mail_subject[i],
             })
-            self.json = json.dumps(jslist)
+        self.json = json.dumps(jslist)
         with open('info.json', 'w') as f:
             f.write(self.json)
         logging.info("邮件信息已存至 info.json 中")
@@ -120,29 +121,22 @@ class QQMailSpider(object):
 def wordSplit(rawWordList):
     if os.path.exists('wordsfreq.json'):
         logging.info("载入已有分词结果...")
-        with open('wordsfreq.json','r') as f:
-            wjson=f.read()
+        with open('wordsfreq.json', 'r') as f:
+            wjson = f.read()
         return json.loads(wjson)
     else:
         logging.info("载入thulac分词包")
         thusplit = thulac.thulac(filt=True)
-        words = []
-        logging.info("开始分词...")
-        splitcnt = 0
-        for raw in rawWordList:
-            words.extend(thusplit.cut(raw))  # 分词结果为二维数组，[['word','type'],...,]
-            splitcnt += 1
-            if splitcnt % 100 == 0:
-                logging.info("已进行 %d 次..." % splitcnt)
-        logging.info("分词完毕！共进行 %d 次" % splitcnt)
-        wlist = []
-        for w in words:
-            filt = ['n', 'np', 'ns', 'ni', 'nz']  # 按照词的类型过滤
-            if w[1] in filt:
-                wlist.append(w[0])
+        logging.info("开始分词，请等待...")
+        words = reduce(lambda x, y: x+y,
+                       [thusplit.cut(raw) for raw in rawWordList])
+        logging.info("分词完毕！共进行 %d 次" % len(rawWordList))
+        filt = ['n', 'np', 'ns', 'ni', 'nz']  # 按照词的类型过滤
+        wlist = [w[0] for w in filter(lambda w: w[1] in filt, words)]
         count = Counter(wlist)
-        wdict = dict((word, freq) for word, freq in count.most_common())  # 生成词频dict
-        with open('wordsfreq.json','w') as f:
+        wdict = dict((word, freq)
+                     for word, freq in count.most_common())  # 生成词频dict
+        with open('wordsfreq.json', 'w') as f:
             f.write(json.dumps(wdict))
         return wdict
 
