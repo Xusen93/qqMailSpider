@@ -21,6 +21,6 @@ See [http://thulac.thunlp.org/](http://thulac.thunlp.org/) for more. It's a word
 ```shell
 pip install wordcloud
 ```  
-See [http://amueller.github.io/word_cloud/](http://amueller.github.io/word_cloud/) for more. It is to generate a word cloud.  
+See [http://amueller.github.io/word_cloud/](http://amueller.github.io/word_cloud/) for more. It is to generate word clouds.  
 ## Contacts  
 > Emails to xusenthu@qq.com is welcomed.  
