@@ -11,16 +11,16 @@ Execute the script, wait for the browser opening, login your account.
 ```shell
 pip install selenium
 ```  
-To [http://www.seleniumhq.org/](http://www.seleniumhq.org/) for more. To use qqMailSpider, you need a chrome and chromedriver.exe.  
+See [http://www.seleniumhq.org/](http://www.seleniumhq.org/) for more. The chrome and chromedriver.exe are required.  
 - thulac  
 ```shell
 pip install thulac
 ```  
-To [http://thulac.thunlp.org/](http://thulac.thunlp.org/) for more. It is a word-split package.  
+See [http://thulac.thunlp.org/](http://thulac.thunlp.org/) for more. It's a word-split package maintained by a research group of Tsinghua University.  
 - wordcloud  
 ```shell
 pip install wordcloud
 ```  
-To [http://amueller.github.io/word_cloud/](http://amueller.github.io/word_cloud/) for more. It is to generate word cloud.  
+See [http://amueller.github.io/word_cloud/](http://amueller.github.io/word_cloud/) for more. It is to generate a word cloud.  
 ## Contacts  
 > Emails to xusenthu@qq.com is welcomed.  
